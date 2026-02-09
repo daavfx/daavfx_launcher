@@ -33,6 +33,4 @@ resources/
 # OS
 Thumbs.db
 src-tauri/target/
-node_modules/
 assets/
-*.log
