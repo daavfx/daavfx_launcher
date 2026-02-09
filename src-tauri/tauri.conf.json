@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "com.daavfx.launcher",
+  "productName": "Daavfx Launcher",
+  "version": "1.0.0",
+ "build": {
+      "beforeDevCommand": "npm run dev",
+      "beforeBuildCommand": "npm run build",
+      "devUrl": "http://localhost:1424",
+      "frontendDist": "../dist"
+    },"app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Daavfx Launcher",
+        "width": 350,
+        "height": 700,
+        "visible": true,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null,
+      "capabilities": [
+        "default"
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

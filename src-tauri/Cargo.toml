@@ -1,0 +1,28 @@
+[package]
+name = "daavfx-launcher"
+version = "1.0.0"
+edition = "2021"
+description = "Daavfx Ecosystem Launcher"
+authors = ["DAAVFX"]
+default-run = "daavfx-launcher"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+llm = { git = "https://github.com/rustformers/llm", branch = "main" }
+rand = "0.8"
+tokio = { version = "1.49.0", features = ["full"] }
+dashmap = "6.1.0"
+futures-util = "0.3.31"
+console = { version = "0.16.2", features = ["std"] }
+indicatif = { version = "0.18.3", features = ["default"] }
+axum = "0.8.8"
+tower-http = { version = "0.6.8", features = ["cors"] }
+# console = { version = "0.15", features = ["std"] }
+# indicatif = { version = "0.16", features = ["default"] }

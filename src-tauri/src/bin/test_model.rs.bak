@@ -1,0 +1,78 @@
+use std::path::PathBuf;
+use std::io::Write;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    println!("Starting Model Test...");
+
+    // 1. Locate Model
+    let mut model_path = std::env::current_dir()?;
+    model_path.push("resources");
+    model_path.push("models");
+    model_path.push("qwen2.5-0.5b-instruct-q4_k_m.gguf");
+
+    println!("Looking for model at: {:?}", model_path);
+
+    if !model_path.exists() {
+        return Err(format!("Model not found at {:?}. Please run download_model.ps1 first.", model_path).into());
+    }
+
+    // 2. Load Model
+    println!("Loading model... (this may take a moment)");
+    let architecture = llm::ModelArchitecture::Qwen; // Qwen is Llama-based architecture usually supported as Llama or specific Qwen
+    // Note: rustformers/llm might treat Qwen as Llama. Let's try Llama first as Qwen2.5 is typically Llama architecture compatible in GGUF.
+    
+    let tokenizer_source = llm::TokenizerSource::Embedded;
+    
+    let model = llm::load_dynamic(
+        Some(llm::ModelArchitecture::Llama),
+        &model_path,
+        tokenizer_source,
+        Default::default(),
+        llm::load_progress_callback_stdout
+    )?;
+
+    println!("\nModel loaded successfully!");
+
+    // 3. Inference
+    let prompt = "Write a Rust function to add two numbers.";
+    let system_context = "You are a helpful coding assistant.";
+    
+    // ChatML Format
+    let formatted_prompt = format!(
+        "<|im_start|>system\n{}<|im_end|>\n<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n",
+        system_context,
+        prompt
+    );
+
+    println!("Running inference on prompt: '{}'", prompt);
+    println!("---------------------------------------------------");
+
+    let mut session = model.start_session(Default::default());
+    
+    let inference_params = llm::InferenceParameters {
+        sampler: std::sync::Arc::new(llm::samplers::TopP::default()),
+        ..Default::default()
+    };
+
+    let _ = session.infer::<std::convert::Infallible>(
+        model.as_ref(),
+        &mut rand::thread_rng(),
+        &llm::InferenceRequest {
+            prompt: formatted_prompt.as_str().into(),
+            parameters: &inference_params,
+            play_back_previous_tokens: false,
+            maximum_token_count: Some(200), // Short test
+        },
+        &mut Default::default(),
+        |t| {
+            print!("{}", t);
+            std::io::stdout().flush().unwrap();
+            Ok(llm::InferenceFeedback::Continue)
+        }
+    );
+    
+    println!("\n---------------------------------------------------");
+    println!("Test Complete.");
+
+    Ok(())
+}
